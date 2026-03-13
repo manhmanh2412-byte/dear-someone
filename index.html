@@ -26,17 +26,38 @@
             text-align: center;
             max-width: 600px;
             padding: 20px;
+            position: relative;
         }
 
-        .image-container img {
-            max-width: 90%;
+        .image-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .image-wrapper img {
+            max-width: 100%;
             height: auto;
-            border-radius: 4px;
+            border-radius: 8px;
+            display: block;
+        }
+
+        /* Chữ đè lên giữa bức ảnh */
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #333; /* Bạn có thể đổi sang trắng #fff nếu ảnh gấu trúc tối màu */
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+            pointer-events: none; /* Để không cản trở việc click vào container nếu cần */
         }
 
         .content-box {
             position: relative;
-            height: 80px;
+            height: 60px;
             margin-top: 25px;
         }
 
@@ -45,86 +66,91 @@
             width: 100%;
             left: 0; top: 0;
             font-size: 1.2rem;
-            line-height: 1.6;
             opacity: 0;
-            transition: all 1.2s ease;
+            transition: all 0.8s ease;
         }
 
-        /* Dòng chữ đầu tiên hiển thị sẵn */
-        #msg-1 { 
-            opacity: 1; 
-            transform: translateY(0); 
-        }
-
-        /* Hiệu ứng trôi lên và mờ dần cho dòng cũ */
-        .slide-up-out {
-            opacity: 0 !important;
-            transform: translateY(-30px) !important;
-        }
-
-        /* Hiệu ứng hiện hình cho dòng mới */
         .fade-in-view {
             opacity: 1 !important;
             transform: translateY(0) !important;
         }
 
-        .btn-next {
+        /* Group nút bấm */
+        .btn-group {
             margin-top: 30px;
-            background: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: relative;
+            min-height: 50px;
+        }
+
+        .btn {
+            background: white;
             border: 1px solid #ddd;
             padding: 10px 25px;
             cursor: pointer;
             font-family: inherit;
-            color: var(--text-sub);
-            letter-spacing: 1px;
-            transition: 0.3s;
             border-radius: 20px;
+            transition: 0.3s;
         }
 
-        .btn-next:hover {
+        .btn-yes:hover {
             border-color: #333;
-            color: #333;
             background-color: #f9f9f9;
+        }
+
+        /* Nút Không thích chạy trốn */
+        #btn-no {
+            position: absolute;
+            transition: all 0.2s ease;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <div class="image-container">
-            <img src="panda.jpg" alt="Panda Image">
-        </div>
-
-        <div class="content-box">
-            <div class="message" id="msg-1">Hellu, b có thích gấu trúc hong?</div>
-            <div class="message" id="msg-2" style="transform: translateY(20px);">
-                Tui thì thích lắm á.<br>
-                <span style="color: var(--text-sub); font-size: 0.95rem;">Vì chúng trông có vẻ... bình yên.</span>
+        <div class="image-wrapper">
+            <img src="panda.jpg" alt="Panda">
+            <div class="overlay-text" id="main-question">
+                Hellu, b có thích gấu trúc hong?
             </div>
         </div>
 
-        <button class="btn-next" id="trigger-btn" onclick="handleTransition()">Tiếp tục</button>
+        <div class="content-box">
+            <div class="message" id="response-msg">
+                Tui cũng thích tụi ló, heh
+            </div>
+        </div>
+
+        <div class="btn-group" id="actions">
+            <button class="btn btn-yes" onclick="sayYes()">Có có</button>
+            <button class="btn" id="btn-no" onmouseover="moveButton()">Không thích</button>
+        </div>
     </div>
 
     <script>
-        function handleTransition() {
-            const firstMsg = document.getElementById('msg-1');
-            const secondMsg = document.getElementById('msg-2');
-            const button = document.getElementById('trigger-btn');
+        function sayYes() {
+            // Hiện dòng chữ phản hồi
+            document.getElementById('response-msg').classList.add('fade-in-view');
+            
+            // Ẩn câu hỏi cũ và nút bấm
+            document.getElementById('main-question').style.opacity = '0';
+            document.getElementById('actions').style.display = 'none';
+        }
 
-            // 1. Cho dòng 1 lướt lên và mờ đi
-            firstMsg.classList.add('slide-up-out');
-
-            // 2. Sau 0.6s cho dòng 2 hiện lên
-            setTimeout(() => {
-                secondMsg.classList.add('fade-in-view');
-            }, 600);
-
-            // 3. Làm mờ nút bấm sau khi nhấn
-            button.style.opacity = '0';
-            setTimeout(() => {
-                button.remove();
-            }, 1000);
+        function moveButton() {
+            const btnNo = document.getElementById('btn-no');
+            
+            // Tính toán vị trí ngẫu nhiên trong phạm vi màn hình
+            const x = Math.random() * (window.innerWidth - btnNo.offsetWidth - 50);
+            const y = Math.random() * (window.innerHeight - btnNo.offsetHeight - 50);
+            
+            // Đưa nút ra khỏi container để bay tự do trên màn hình
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = x + 'px';
+            btnNo.style.top = y + 'px';
         }
     </script>
 
