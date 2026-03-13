@@ -3,159 +3,128 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lời chào đầu tiên</title>
+    <title>Dear Someone - Panda Story</title>
     <style>
         :root {
-            /* Tông màu tối giản: Trắng, Đen nhạt, Xám */
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --accent-color: #555555; /* Xám trung tính, không sến */
-            --font-family: 'Georgia', serif; /* Font chữ có chân, mang chất văn học */
-            --transition-speed: 1.5s;
+            --bg-color: #fdfdfd;
+            --text-main: #222222;
+            --text-sub: #777777;
+            --font-main: 'Georgia', serif;
         }
 
         body, html {
             margin: 0; padding: 0;
             width: 100%; height: 100%;
-            display: flex; flex-direction: column;
-            justify-content: center; align-items: center;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: var(--font-family);
-            overflow: hidden; /* Ngăn cuộn trang */
-            text-align: center;
-        }
-
-        /* Container chứa hình ảnh và văn bản */
-        .intro-container {
-            display: flex; flex-direction: column;
-            align-items: center; gap: 30px;
-            max-width: 600px; padding: 20px;
-        }
-
-        /* Hình ảnh gấu trúc - Giữ nguyên */
-        .panda-image-container {
-            width: 100%;
-            display: flex; justify-content: center;
-        }
-        
-        .panda-image {
-            max-width: 80%; /* Giảm kích thước ảnh một chút để vừa khung hình */
-            height: auto;
-            transition: transform 0.3s;
-        }
-
-        /* Container chứa các dòng chữ để chuyển cảnh */
-        .text-container {
-            position: relative;
-            width: 100%; height: 60px; /* Độ cao cố định cho văn bản */
             display: flex; justify-content: center; align-items: center;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow: hidden;
         }
 
-        /* Phong cách chung cho các dòng chữ */
-        .typewriter {
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+        }
+
+        .image-container img {
+            max-width: 90%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .content-box {
+            position: relative;
+            height: 80px;
+            margin-top: 25px;
+        }
+
+        .message {
             position: absolute;
+            width: 100%;
+            left: 0; top: 0;
             font-size: 1.2rem;
             line-height: 1.6;
-            letter-spacing: 1px;
-            font-weight: 300;
             opacity: 0;
-            width: 100%;
+            transition: all 1.2s ease;
         }
 
-        /* Dòng chữ 1: "Hellu, b có thích gấu trúc hong?" */
-        #text1 {
-            opacity: 1; /* Hiển thị lúc đầu */
+        /* Dòng chữ đầu tiên hiển thị sẵn */
+        #msg-1 { 
+            opacity: 1; 
+            transform: translateY(0); 
         }
 
-        /* Nút chuyển cảnh tinh tế */
-        .btn-start {
-            margin-top: 40px;
+        /* Hiệu ứng trôi lên và mờ dần cho dòng cũ */
+        .slide-up-out {
+            opacity: 0 !important;
+            transform: translateY(-30px) !important;
+        }
+
+        /* Hiệu ứng hiện hình cho dòng mới */
+        .fade-in-view {
+            opacity: 1 !important;
+            transform: translateY(0) !important;
+        }
+
+        .btn-next {
+            margin-top: 30px;
             background: none;
-            border: 1px solid var(--accent-color);
-            color: var(--accent-color);
+            border: 1px solid #ddd;
             padding: 10px 25px;
             cursor: pointer;
             font-family: inherit;
+            color: var(--text-sub);
+            letter-spacing: 1px;
             transition: 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 0.8rem;
+            border-radius: 20px;
         }
 
-        .btn-start:hover {
-            border-color: #000;
-            color: #000;
-            background-color: rgba(0,0,0,0.05);
+        .btn-next:hover {
+            border-color: #333;
+            color: #333;
+            background-color: #f9f9f9;
         }
-
-        /* --- Định nghĩa Animation --- */
-
-        /* Animation cho dòng chữ cũ: Lướt lên và mờ đi */
-        @keyframes slideOutFadeOut {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-30px); }
-        }
-
-        /* Animation cho dòng chữ mới: Hiện lên */
-        @keyframes fadeIn {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
-        /* Lớp CSS để kích hoạt animation cho dòng chữ cũ */
-        .animate-out {
-            animation: slideOutFadeOut var(--transition-speed) ease-out forwards;
-        }
-
-        /* Lớp CSS để kích hoạt animation cho dòng chữ mới */
-        .animate-in {
-            animation: fadeIn var(--transition-speed) ease-in forwards;
-        }
-
     </style>
 </head>
 <body>
 
-    <div class="intro-container">
-        <div class="panda-image-container">
-            <img src="panda_intro.png" class="panda-image" alt="Gấu trúc">
+    <div class="container">
+        <div class="image-container">
+            <img src="panda.jpg" alt="Panda Image">
         </div>
 
-        <div class="text-container">
-            <div class="typewriter" id="text1">
-                Hellu, b có thích gấu trúc hong?
-            </div>
-            <div class="typewriter" id="text2">
+        <div class="content-box">
+            <div class="message" id="msg-1">Hellu, b có thích gấu trúc hong?</div>
+            <div class="message" id="msg-2" style="transform: translateY(20px);">
                 Tui thì thích lắm á.<br>
-                <span style="font-style: italic; font-size: 0.9rem; color: #777;">(Bạn hãy sửa lại câu văn này cho đúng ý đồ của mình nhé)</span>
+                <span style="color: var(--text-sub); font-size: 0.95rem;">Vì chúng trông có vẻ... bình yên.</span>
             </div>
         </div>
 
-        <button class="btn-start" id="btnNext" onclick="changePandaMessage()">Tiếp tục</button>
+        <button class="btn-next" id="trigger-btn" onclick="handleTransition()">Tiếp tục</button>
     </div>
 
     <script>
-        function changePandaMessage() {
-            const text1 = document.getElementById('text1');
-            const text2 = document.getElementById('text2');
-            const btn = document.getElementById('btnNext');
+        function handleTransition() {
+            const firstMsg = document.getElementById('msg-1');
+            const secondMsg = document.getElementById('msg-2');
+            const button = document.getElementById('trigger-btn');
 
-            // 1. Kích hoạt animation cho dòng chữ cũ
-            text1.classList.add('animate-out');
+            // 1. Cho dòng 1 lướt lên và mờ đi
+            firstMsg.classList.add('slide-up-out');
 
-            // 2. Sau một khoảng thời gian ngắn, hiện dòng chữ mới
-            // (Nên hiện trước khi dòng cũ mờ hẳn để tạo cảm giác chuyển tiếp mượt mà)
+            // 2. Sau 0.6s cho dòng 2 hiện lên
             setTimeout(() => {
-                // Kích hoạt animation cho dòng chữ mới
-                text2.classList.add('animate-in');
-            }, 500); // Đợi 0.5s để dòng chữ cũ bắt đầu lướt lên
+                secondMsg.classList.add('fade-in-view');
+            }, 600);
 
-            // 3. Ẩn nút "Tiếp tục" sau khi chuyển xong
+            // 3. Làm mờ nút bấm sau khi nhấn
+            button.style.opacity = '0';
             setTimeout(() => {
-                btn.style.display = 'none';
-                // (Sau dòng này, bạn có thể thêm code để dẫn vào phần storytelling tiếp theo)
-            }, 2000); // Đợi 2s để animation hoàn tất
+                button.remove();
+            }, 1000);
         }
     </script>
 
