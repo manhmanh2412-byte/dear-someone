@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi người đặc biệt</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #ffeef2;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            cursor: pointer;
+        }
+
+        /* Hiệu ứng trái tim đập */
+        .heart {
+            position: relative;
+            width: 100px;
+            height: 90px;
+            background-color: #ff5e78;
+            margin: 0 auto;
+            transform: rotate(-45deg);
+            animation: beat 0.8s infinite alternate;
+            box-shadow: 0 0 40px #ffb3c1;
+        }
+
+        .heart::before, .heart::after {
+            content: "";
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background-color: #ff5e78;
+            border-radius: 50%;
+        }
+
+        .heart::before { top: -50px; left: 0; }
+        .heart::after { left: 50px; top: 0; }
+
+        @keyframes beat {
+            to { transform: scale(1.1) rotate(-45deg); }
+        }
+
+        .message {
+            margin-top: 80px;
+            color: #d63384;
+            font-size: 1.5rem;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 1s ease-in;
+        }
+
+        .sub-message {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" onclick="revealMessage()">
+        <div class="heart"></div>
+        <div class="message" id="mainMessage">
+            Bạn là điều tuyệt vời nhất mình tìm thấy ✨
+        </div>
+        <div class="sub-message" id="instruction">Nhấn vào trái tim đi...</div>
+    </div>
+
+    <script>
+        function revealMessage() {
+            document.getElementById('mainMessage').style.opacity = '1';
+            document.getElementById('instruction').style.display = 'none';
+            
+            // Tạo hiệu ứng bóng bóng trái tim khi click
+            for (let i = 0; i < 10; i++) {
+                createMiniHeart();
+            }
+        }
+
+        function createMiniHeart() {
+            const mini = document.createElement('div');
+            mini.innerHTML = '❤️';
+            mini.style.position = 'absolute';
+            mini.style.left = Math.random() * 100 + 'vw';
+            mini.style.bottom = '0';
+            mini.style.fontSize = Math.random() * 20 + 10 + 'px';
+            mini.style.transition = 'transform 3s linear, opacity 3s';
+            document.body.appendChild(mini);
+
+            setTimeout(() => {
+                mini.style.transform = `translateY(-100vh) translateX(${Math.random() * 100 - 50}px)`;
+                mini.style.opacity = '0';
+            }, 100);
+
+            setTimeout(() => mini.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
