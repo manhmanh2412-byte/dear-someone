@@ -119,7 +119,53 @@
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }/* --- HỆ THỐNG XẤP GIẤY VÀ STICKER --- */
+        .letter-stack {
+            display: none;
+            position: relative;
+            width: 300px; height: 220px;
+            margin: 40px auto 20px;
+            perspective: 1000px;
         }
+        .sheet {
+            position: absolute;
+            width: 100%; height: 100%;
+            background: white;
+            border: 1px solid #ddd;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            padding: 25px;
+            box-sizing: border-box;
+            cursor: grab;
+            transition: transform 0.1s ease;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: left;
+            line-height: 1.6;
+            font-size: 0.95rem;
+            color: #444;
+            overflow: hidden;
+            border-radius: 5px;
+        }
+        .sticker {
+            position: absolute;
+            width: 50px; height: 50px;
+            bottom: 5px; right: 5px;
+            opacity: 0.8;
+            pointer-events: none;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        /* Độ nghiêng cho các tờ giấy */
+        .sheet:nth-child(1) { transform: rotate(-1deg); z-index: 8; }
+        .sheet:nth-child(2) { transform: rotate(2deg) translate(3px, 3px); z-index: 7; }
+        .sheet:nth-child(3) { transform: rotate(-3deg) translate(6px, 2px); z-index: 6; }
+        .sheet:nth-child(4) { transform: rotate(1.5deg) translate(2px, 5px); z-index: 5; }
+        .sheet:nth-child(5) { transform: rotate(-1deg) translate(4px, 1px); z-index: 4; }
+        .sheet:nth-child(6) { transform: rotate(2.5deg) translate(1px, 4px); z-index: 3; }
+        .sheet:nth-child(7) { transform: rotate(-2deg) translate(5px, 3px); z-index: 2; }
+        .sheet:nth-child(8) { transform: rotate(1deg); z-index: 1; }
     </style>
 </head>
 <body>
@@ -147,35 +193,68 @@
             <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">(Bấm để mở thư nhé)</p>
         </div>
     </div>
-
+<div class="letter-stack" id="stack">
+            <div class="sheet">Hy vọng những điều nhỏ bé này làm b mỉm cười. Hết rùi đó, chúc b ngủ ngon nhe! ✨<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet">B biết không, gấu trúc dành 12 tiếng để ăn, còn tui chắc dành 12 tiếng để nhớ b quá. Haha!<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet">Tui định viết gì đó sâu sắc lắm, mà nhìn mặt gấu trúc cái tui quên hết trơn luôn á.<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet">Thật ra làm cái trang web này cũng hơi cực, nhưng mà b thích là tui thấy vui rồi.<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet">Mỗi tờ giấy này là một lời chúc nhỏ tui gửi đến b, mong b luôn bình yên nha.<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet">Gấu trúc thì thích trúc, còn tui thì thích... b chọn nút "Có có" hồi nãy đó!<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet">Cảm ơn b đã dành thời gian ngồi click hết đống giấy này của tui nha.<img src="panda.jpg" class="sticker"></div>
+            <div class="sheet" style="font-size: 1.5rem; text-align: center; font-weight: bold;">Gửi bạn.<img src="panda.jpg" class="sticker"></div>
+        </div>
+        <p id="ins" style="display:none; font-size: 0.8rem; color: #777; margin-top: 10px;">Dùng chuột kéo tờ giấy ra để đọc tiếp nha...</p>
   <script>
         function handleYes() {
             document.getElementById('text-q').style.display = 'none';
             document.getElementById('btn-area').style.display = 'none';
             document.getElementById('text-r').style.display = 'block';
-            document.getElementById('letter-box').style.display = 'block';
-            
-            // Nhích nhẹ khung xuống một xíu cho cân đối khi có thư hiện ra
-            document.getElementById('ui-box').style.marginBottom = "120px";
+            document.getElementById('stack').style.display = 'block'; // Hiện xấp thư mới
+            document.getElementById('ins').style.display = 'block'; // Hiện hướng dẫn
+            document.getElementById('ui-box').style.marginBottom = "50px";
+            initDrag();
         }
 
-        function openLetter() {
-            document.getElementById('env').classList.toggle('open');
+        function initDrag() {
+            const sheets = document.querySelectorAll('.sheet');
+            sheets.forEach(sheet => {
+                let isDragging = false;
+                let startX, startY;
+                sheet.addEventListener('mousedown', (e) => {
+                    isDragging = true;
+                    startX = e.clientX; startY = e.clientY;
+                    sheet.style.transition = 'none';
+                });
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    const dx = e.clientX - startX;
+                    const dy = e.clientY - startY;
+                    sheet.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx / 15}deg)`;
+                });
+                document.addEventListener('mouseup', (e) => {
+                    if (!isDragging) return;
+                    isDragging = false;
+                    const dx = e.clientX - startX;
+                    if (Math.abs(dx) > 120) {
+                        sheet.style.transition = 'all 0.6s ease';
+                        sheet.style.transform = `translate(${dx * 5}px, ${e.clientY - startY}px) rotate(${dx / 2}deg)`;
+                        sheet.style.opacity = '0';
+                        setTimeout(() => sheet.remove(), 600);
+                    } else {
+                        sheet.style.transition = 'all 0.3s ease';
+                        sheet.style.transform = `translate(0, 0) rotate(0deg)`;
+                    }
+                });
+            });
         }
 
         function runAway() {
             const btnNo = document.getElementById('btn-no');
-            
-            // Giới hạn vùng chạy trong bán kính 150px
             const limit = 150; 
-            
-            // Tạo tọa độ nhảy ngẫu nhiên trong phạm vi giới hạn
             const randomX = (Math.random() - 0.5) * limit * 2;
             const randomY = (Math.random() - 0.5) * limit * 2;
-            
-            // Dùng transform để nút nhảy quanh vị trí gốc của nó
+            btnNo.style.transition = "all 0.2s ease";
             btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
-            btnNo.style.transition = "all 0.2s ease"; // Cho nó lướt đi mượt mà
         }
     </script>
 </body>
