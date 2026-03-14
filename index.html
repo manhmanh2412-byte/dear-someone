@@ -7,7 +7,7 @@
     <style>
         :root {
             --text-color: #333;
-            --bg-overlay: rgba(255, 255, 255, 0.6); 
+            --bg-overlay: rgba(255, 255, 255, 0.7); 
             --font-main: 'Georgia', serif;
         }
 
@@ -17,22 +17,24 @@
             font-family: var(--font-main);
             overflow: hidden;
             display: flex; justify-content: center; align-items: center;
-            background-color: #000;
+            background-color: #fce4ec; /* Màu hồng nhạt dự phòng nếu ảnh lỗi */
         }
 
         .full-bg {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            background-image: url('panda.jpg');
-            background-size: cover; background-position: center;
-            z-index: -2;
+            /* BÀ KIỂM TRA TÊN FILE ẢNH CÓ ĐÚNG LÀ panda.jpg KHÔNG NHÉ */
+            background: url('panda.jpg') no-repeat center center;
+            background-size: cover;
+            z-index: -3; /* Nằm dưới cùng */
         }
 
-        /* Hiệu ứng tuyết rơi */
+        /* Canvas tuyết rơi */
         #snow-canvas {
             position: fixed; top: 0; left: 0;
             width: 100%; height: 100%;
-            pointer-events: none; z-index: -1;
+            pointer-events: none; 
+            z-index: -1; /* Nằm trên nền nhưng dưới nội dung */
         }
 
         .main-container {
@@ -40,99 +42,64 @@
             background: var(--bg-overlay);
             padding: 30px 50px;
             border-radius: 20px;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(5px);
             max-width: 85%;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            transition: all 1s ease;
+            transition: opacity 1s ease, transform 1s ease;
             position: relative;
             z-index: 20;
         }
 
-        .content-area {
-            min-height: 80px;
-            display: flex; align-items: center; justify-content: center;
-        }
-
-        .question, .response {
-            font-size: 1.6rem;
-            color: var(--text-color);
-            font-weight: bold;
-            margin: 0;
-            transition: opacity 1s ease;
-        }
-
+        .content-area { min-height: 80px; display: flex; align-items: center; justify-content: center; }
+        .question, .response { font-size: 1.6rem; color: var(--text-color); font-weight: bold; margin: 0; }
         .response { display: none; }
 
-        .btn-group {
-            display: flex; justify-content: center;
-            margin-top: 30px; min-height: 50px;
-            gap: 40px;
-        }
-
-        .btn {
-            padding: 10px 35px; border-radius: 25px;
-            border: 1px solid #333; background: white;
-            cursor: pointer; font-family: inherit; transition: 0.3s;
-        }
-
+        .btn-group { display: flex; justify-content: center; margin-top: 30px; gap: 40px; }
+        .btn { padding: 10px 35px; border-radius: 25px; border: 1px solid #333; background: white; cursor: pointer; transition: 0.3s; }
         .btn-yes:hover { background: #333; color: white; }
-        #btn-no { position: relative; transition: all 0.2s ease; z-index: 100; }
+        #btn-no { position: relative; transition: all 0.2s ease; }
 
-        /* --- XẤP GIẤY CĂN GIỮA --- */
+        /* --- XẤP GIẤY --- */
         .letter-stack {
             display: none;
-            position: fixed; /* Đổi sang fixed để dễ căn giữa màn hình */
-            top: 50%; left: 50%;
+            position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            width: 320px; height: 240px;
+            width: 320px; height: 260px;
             perspective: 1000px;
-            z-index: 30;
+            z-index: 100;
         }
 
         .sheet {
-            position: absolute;
-            width: 100%; height: 100%;
-            background: white;
-            border: 1px solid #ddd;
+            position: absolute; width: 100%; height: 100%;
+            background: white; border: 1px solid #ddd;
             box-shadow: 2px 2px 15px rgba(0,0,0,0.15);
-            padding: 25px;
-            box-sizing: border-box;
-            cursor: grab;
-            transition: transform 0.1s ease, opacity 0.5s;
-            user-select: none;
+            padding: 25px; box-sizing: border-box;
+            cursor: grab; user-select: none;
             display: flex; flex-direction: column; justify-content: center;
-            text-align: left; line-height: 1.5;
-            font-size: 0.9rem; color: #444;
-            border-radius: 8px;
+            text-align: left; line-height: 1.5; font-size: 0.9rem; color: #444;
+            border-radius: 12px;
         }
 
-        .sticker {
-            position: absolute; width: 50px; height: 50px;
-            bottom: 5px; right: 5px; border-radius: 50%;
-            object-fit: cover; opacity: 0.9;
-        }
-
+        .sticker { position: absolute; width: 50px; height: 50px; bottom: 8px; right: 8px; border-radius: 50%; object-fit: cover; }
+        
         .instruction {
-            display: none;
-            position: fixed; bottom: 10%; left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.8rem; color: #fff;
-            text-shadow: 1px 1px 4px rgba(0,0,0,0.8);
-            z-index: 31;
+            display: none; position: fixed; bottom: 8%; left: 50%;
+            transform: translateX(-50%); font-size: 0.85rem;
+            color: white; text-shadow: 1px 1px 3px rgba(0,0,0,0.5); z-index: 101;
         }
 
-        /* Độ nghiêng */
-        .sheet:nth-child(1) { transform: rotate(-1deg); z-index: 8; }
-        .sheet:nth-child(2) { transform: rotate(2deg) translate(3px, 3px); z-index: 7; }
-        .sheet:nth-child(3) { transform: rotate(-3deg) translate(6px, 2px); z-index: 6; }
-        .sheet:nth-child(4) { transform: rotate(1.5deg) translate(2px, 5px); z-index: 5; }
-        .sheet:nth-child(5) { transform: rotate(-1deg) translate(4px, 1px); z-index: 4; }
-        .sheet:nth-child(6) { transform: rotate(2.5deg) translate(1px, 4px); z-index: 3; }
-        .sheet:nth-child(7) { transform: rotate(-2deg) translate(5px, 3px); z-index: 2; }
-        .sheet:nth-child(8) { transform: rotate(1deg); z-index: 1; }
+        /* Nghiêng tự nhiên */
+        .sheet:nth-child(1) { transform: rotate(-2deg); z-index: 8; }
+        .sheet:nth-child(2) { transform: rotate(3deg); z-index: 7; }
+        .sheet:nth-child(3) { transform: rotate(-1deg); z-index: 6; }
+        .sheet:nth-child(4) { transform: rotate(2deg); z-index: 5; }
+        .sheet:nth-child(5) { transform: rotate(-3deg); z-index: 4; }
+        .sheet:nth-child(6) { transform: rotate(1deg); z-index: 3; }
+        .sheet:nth-child(7) { transform: rotate(-2deg); z-index: 2; }
+        .sheet:nth-child(8) { transform: rotate(0deg); z-index: 1; }
 
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translate(-50%, -40%); }
+            from { opacity: 0; transform: translate(-50%, -30%); }
             to { opacity: 1; transform: translate(-50%, -50%); }
         }
     </style>
@@ -147,7 +114,6 @@
             <div class="question" id="text-q">Xin chào, bạn có thích gấu trúc hong?</div>
             <div class="response" id="text-r">Tui cũng thích tụi ló.</div>
         </div>
-
         <div class="btn-group" id="btn-area">
             <button class="btn btn-yes" onclick="handleYes()">Có có</button>
             <button class="btn" id="btn-no" onmouseover="runAway()">Không thích</button>
@@ -156,130 +122,106 @@
 
     <div class="letter-stack" id="stack">
         <div class="sheet" style="font-size: 1.5rem; text-align: center; font-weight: bold;">Vlt trắng vui vẻ.<img src="panda.jpg" class="sticker"></div>
-        <div class="sheet">Chúc bạn tương lai xán lạn, tiền đồ tựa gấm. Mong rằng những cố gắng của bạn đều sẽ đạt kết quả tốt. Hy vọng bạn sẽ mạnh mẽ bước tiếp trên con đường mình chọn, đầu tư cho bản thân và biết được điều gì tốt và xấu. Cuối cùng tui ước rằng cuộc đời này sẽ ưu ái bạn hơn.<img src="panda.jpg" class="sticker"></div>
-        <div class="sheet">Có thể thái độ của tui đối với bạn qua mắt cảu người khác có vẻ dửng dưng, không quan tâm. Tại vì tui không muốn mọi người biết tui đang nghĩ gì về việc này, theo bản năng tui đã bảo vệ mình trước. Chứ thật ra tui rất để ý đến hành động của bạn.<img src="panda.jpg" class="sticker"></div>
-        <div class="sheet">Tui không muốn bạn nghe người khác nói cái gì thì tin cái đó. Nên tui nghĩ mình vẫn nên nói cho bạn biết là bạn quan trọng với tui như thế nào, hoặc ít nhất là hơn bạn nghĩ<img src="panda.jpg" class="sticker"></div>
+        <div class="sheet">Chúc bạn tương lai xán lạn, tiền đồ tựa gấm. Mong rằng những cố gắng của bạn đều sẽ đạt kết quả tốt...<img src="panda.jpg" class="sticker"></div>
+        <div class="sheet">Có thể thái độ của tui đối với bạn... tui đã bảo vệ mình trước.<img src="panda.jpg" class="sticker"></div>
+        <div class="sheet">Tui không muốn bạn nghe người khác nói cái gì thì tin cái đó...<img src="panda.jpg" class="sticker"></div>
         <div class="sheet">Tui thấy bạn dễ thương.<img src="panda.jpg" class="sticker"></div>
-        <div class="sheet">Tui tự thấy mình không xứng với bạn. Nói thật thì tui bị xấu tính 😓 tui còn rất thực dụng và lười vch, chắc chắn không tự lo cho bản thân được huống chi là lo cho người khác. Không phải pick me girl đâu nhé, real đấy. Có thể tui còn mắc bệnh tâm lý dở hơi nào đó nữa.<img src="panda.jpg" class="sticker"></div>
-        <div class="sheet">Quan trọng là tui không biết thể hiện tình cảm, nói thẳng ra là khuyết tật não yêu đương. Giỏi đọc truyện xem phim chứ không áp dụng được gì.<img src="panda.jpg" class="sticker"></div>
-        <div class="sheet">Tóm lại, nếu đứng từ xa thì không sao, càng tiếp xúc bạn sẽ càng thất vọng thôi. Hết rồi. Chốt câu cuối nữa là tui rất quý bạn (...if that makes sense)<img src="panda.jpg" class="sticker"></div>
+        <div class="sheet">Tui tự thấy mình không xứng với bạn... tui còn rất thực dụng và lười vch.<img src="panda.jpg" class="sticker"></div>
+        <div class="sheet">Quan trọng là tui không biết thể hiện tình cảm, nói thẳng ra là khuyết tật não yêu đương.<img src="panda.jpg" class="sticker"></div>
+        <div class="sheet">Tóm lại, nếu đứng từ xa thì không sao, càng tiếp xúc bạn sẽ càng thất vọng thôi. Hết rồi.<img src="panda.jpg" class="sticker"></div>
     </div>
     <p class="instruction" id="ins">Dùng chuột kéo tờ giấy ra để đọc tiếp nha...</p>
 
     <script>
-        // --- CODE TUYẾT RƠI ---
+        // --- TUYẾT RƠI (FIXED) ---
         const canvas = document.getElementById('snow-canvas');
         const ctx = canvas.getContext('2d');
-        let width, height, snowflakes = [];
+        let snowflakes = [];
 
         function initSnow() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
             snowflakes = [];
-            for (let i = 0; i < 150; i++) {
+            for (let i = 0; i < 100; i++) {
                 snowflakes.push({
-                    x: Math.random() * width,
-                    y: Math.random() * height,
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
                     r: Math.random() * 3 + 1,
-                    d: Math.random() * 1
+                    v: Math.random() * 1 + 0.5
                 });
             }
         }
 
-        function drawSnow() {
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
             ctx.beginPath();
-            for (let i = 0; i < snowflakes.length; i++) {
-                let p = snowflakes[i];
+            snowflakes.forEach(p => {
                 ctx.moveTo(p.x, p.y);
-                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-            }
+                ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            });
             ctx.fill();
-            updateSnow();
+            snowflakes.forEach(p => {
+                p.y += p.v;
+                if (p.y > canvas.height) p.y = -10;
+            });
+            requestAnimationFrame(draw);
         }
-
-        function updateSnow() {
-            for (let i = 0; i < snowflakes.length; i++) {
-                let p = snowflakes[i];
-                p.y += Math.cos(p.d) + 1 + p.r / 2;
-                p.x += Math.sin(0) * 2;
-                if (p.x > width + 5 || p.x < -5 || p.y > height) {
-                    snowflakes[i] = { x: Math.random() * width, y: -10, r: p.r, d: p.d };
-                }
-            }
-        }
-
         window.addEventListener('resize', initSnow);
-        initSnow();
-        setInterval(drawSnow, 30);
+        initSnow(); draw();
 
-        // --- XỬ LÝ SỰ KIỆN ---
+        // --- XỬ LÝ ---
         function handleYes() {
-            // 1. Hiện chữ phản hồi
             document.getElementById('text-q').style.display = 'none';
             document.getElementById('btn-area').style.display = 'none';
-            const response = document.getElementById('text-r');
-            response.style.display = 'block';
+            document.getElementById('text-r').style.display = 'block';
             
-            // 2. Sau 1.5 giây: mờ dần cái hộp UI và hiện xấp thư
             setTimeout(() => {
                 document.getElementById('ui-box').style.opacity = '0';
-                
                 setTimeout(() => {
                     document.getElementById('ui-box').style.display = 'none';
                     const stack = document.getElementById('stack');
-                    const ins = document.getElementById('ins');
                     stack.style.display = 'block';
-                    ins.style.display = 'block';
                     stack.style.animation = "fadeInUp 1s forwards";
+                    document.getElementById('ins').style.display = 'block';
                     initDrag();
-                }, 1000); // Đợi mờ hẳn rồi mới xóa
+                }, 1000);
             }, 1500);
         }
 
         function initDrag() {
             const sheets = document.querySelectorAll('.sheet');
             sheets.forEach(sheet => {
-                let isDragging = false;
-                let startX, startY;
-                sheet.addEventListener('mousedown', (e) => {
-                    isDragging = true;
-                    startX = e.clientX; startY = e.clientY;
+                let isDragging = false; let startX, startY;
+                sheet.onmousedown = (e) => {
+                    isDragging = true; startX = e.clientX; startY = e.clientY;
                     sheet.style.transition = 'none';
-                });
-                document.addEventListener('mousemove', (e) => {
+                };
+                document.onmousemove = (e) => {
                     if (!isDragging) return;
-                    const dx = e.clientX - startX;
-                    const dy = e.clientY - startY;
-                    sheet.style.transform = `translate(-50%, -50%) translate(${dx}px, ${dy}px) rotate(${dx / 15}deg)`;
-                });
-                document.addEventListener('mouseup', (e) => {
-                    if (!isDragging) return;
-                    isDragging = false;
-                    const dx = e.clientX - startX;
+                    let dx = e.clientX - startX; let dy = e.clientY - startY;
+                    sheet.style.transform = `translate(${dx}px, ${dy}px) rotate(${dx/15}deg)`;
+                };
+                document.onmouseup = (e) => {
+                    if (!isDragging) return; isDragging = false;
+                    let dx = e.clientX - startX;
                     if (Math.abs(dx) > 120) {
-                        sheet.style.transition = 'all 0.6s ease';
-                        sheet.style.transform = `translate(-50%, -50%) translate(${dx * 5}px, ${e.clientY - startY}px) rotate(${dx / 2}deg)`;
+                        sheet.style.transition = '0.5s';
+                        sheet.style.transform = `translate(${dx*5}px, ${e.clientY-startY}px)`;
                         sheet.style.opacity = '0';
-                        setTimeout(() => sheet.remove(), 600);
+                        setTimeout(() => sheet.remove(), 500);
                     } else {
-                        sheet.style.transition = 'all 0.3s ease';
-                        sheet.style.transform = `translate(-50%, -50%) rotate(0deg)`;
+                        sheet.style.transition = '0.3s';
+                        sheet.style.transform = `rotate(0deg)`;
                     }
-                });
+                };
             });
         }
 
         function runAway() {
-            const btnNo = document.getElementById('btn-no');
-            const limit = 150; 
-            const randomX = (Math.random() - 0.5) * limit * 2;
-            const randomY = (Math.random() - 0.5) * limit * 2;
-            btnNo.style.transition = "all 0.2s ease";
-            btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+            const btn = document.getElementById('btn-no');
+            btn.style.left = (Math.random()*200 - 100) + "px";
+            btn.style.top = (Math.random()*200 - 100) + "px";
         }
     </script>
 </body>
