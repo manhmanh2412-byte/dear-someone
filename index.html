@@ -1,5 +1,4 @@
-
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
@@ -17,7 +16,7 @@
             width: 100%; height: 100%;
             font-family: var(--font-main);
             overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
 
         .full-bg {
@@ -36,10 +35,10 @@
             backdrop-filter: blur(8px);
             max-width: 85%;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            /* Nhích khung lên cao để thấy mặt gấu trúc */
-            margin-bottom: 220px; 
-            transition: all 0.5s ease;
+            margin-bottom: 200px; /* Vị trí mặc định */
+            transition: all 0.8s ease;
             position: relative;
+            z-index: 20;
         }
 
         .content-area {
@@ -57,9 +56,9 @@
         .response { display: none; }
 
         .btn-group {
-            display: flex; justify-content: space-around;
+            display: flex; justify-content: center;
             margin-top: 30px; min-height: 50px;
-            gap: 60px; /* Khoảng cách rộng rãi giữa 2 nút */
+            gap: 40px;
         }
 
         .btn {
@@ -72,92 +71,53 @@
 
         #btn-no { position: relative; transition: all 0.2s ease; z-index: 100; }
 
-        /* --- CSS LÁ THƯ --- */
-        .envelope-wrapper {
-            display: none;
-            cursor: pointer;
-            margin-top: 30px;
-            perspective: 1000px;
-            animation: fadeInUp 1s forwards;
-        }
-
-        .envelope {
-            width: 150px; height: 100px;
-            background: #f3d5b5;
-            position: relative; margin: 0 auto;
-            border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;
-        }
-
-        .envelope::before {
-            content: ''; position: absolute;
-            top: 0; left: 0; width: 0; height: 0;
-            border-left: 75px solid transparent;
-            border-right: 75px solid transparent;
-            border-top: 60px solid #d4a373;
-            z-index: 3; transition: transform 0.5s;
-            transform-origin: top;
-        }
-
-        .letter {
-            position: absolute; bottom: 5px; left: 10px;
-            width: 130px; height: 70px;
-            background: white; z-index: 2;
-            transition: all 0.5s;
-            padding: 15px; box-sizing: border-box;
-            font-size: 0.7rem; overflow: hidden;
-            text-align: left; border: 1px solid #eee;
-        }
-
-        .envelope.open::before { transform: rotateX(180deg); z-index: 1; }
-        .envelope.open .letter {
-            transform: translateY(-90px);
-            height: 180px; width: 230px; left: -40px;
-            font-size: 0.95rem; z-index: 2;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }/* --- HỆ THỐNG XẤP GIẤY VÀ STICKER --- */
+        /* --- CSS XẤP GIẤY (ĐÃ ĐẨY LÊN CAO) --- */
         .letter-stack {
             display: none;
-            position: relative;
-            width: 300px; height: 220px;
-            margin: 40px auto 20px;
+            position: absolute;
+            top: 110%; /* Nằm ngay dưới khung chữ */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 320px; height: 240px;
             perspective: 1000px;
+            z-index: 10;
         }
+
         .sheet {
             position: absolute;
             width: 100%; height: 100%;
             background: white;
             border: 1px solid #ddd;
-            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 2px 2px 15px rgba(0,0,0,0.15);
             padding: 25px;
             box-sizing: border-box;
             cursor: grab;
             transition: transform 0.1s ease;
             user-select: none;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            text-align: left;
-            line-height: 1.6;
-            font-size: 0.95rem;
-            color: #444;
-            overflow: hidden;
-            border-radius: 5px;
+            display: flex; flex-direction: column; justify-content: center;
+            text-align: left; line-height: 1.5;
+            font-size: 0.9rem; color: #444;
+            border-radius: 8px;
         }
+
+        .sheet:active { cursor: grabbing; }
+
         .sticker {
-            position: absolute;
-            width: 50px; height: 50px;
-            bottom: 5px; right: 5px;
-            opacity: 0.8;
-            pointer-events: none;
-            border-radius: 50%;
-            object-fit: cover;
+            position: absolute; width: 50px; height: 50px;
+            bottom: 5px; right: 5px; border-radius: 50%;
+            object-fit: cover; opacity: 0.9;
         }
-        /* Độ nghiêng cho các tờ giấy */
+
+        .instruction {
+            display: none;
+            position: absolute;
+            top: 220%; /* Nằm dưới xấp giấy */
+            width: 100%;
+            font-size: 0.8rem; color: #555;
+            text-shadow: 1px 1px 2px white;
+        }
+
+        /* Độ nghiêng tự nhiên */
         .sheet:nth-child(1) { transform: rotate(-1deg); z-index: 8; }
         .sheet:nth-child(2) { transform: rotate(2deg) translate(3px, 3px); z-index: 7; }
         .sheet:nth-child(3) { transform: rotate(-3deg) translate(6px, 2px); z-index: 6; }
@@ -166,6 +126,11 @@
         .sheet:nth-child(6) { transform: rotate(2.5deg) translate(1px, 4px); z-index: 3; }
         .sheet:nth-child(7) { transform: rotate(-2deg) translate(5px, 3px); z-index: 2; }
         .sheet:nth-child(8) { transform: rotate(1deg); z-index: 1; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translate(-50%, 30px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
     </style>
 </head>
 <body>
@@ -183,17 +148,7 @@
             <button class="btn" id="btn-no" onmouseover="runAway()">Không thích</button>
         </div>
 
-        <div class="envelope-wrapper" id="letter-box" onclick="openLetter()">
-            <div class="envelope" id="env">
-                <div class="letter">
-                  
-                
-                </div>
-            </div>
-            <p style="font-size: 0.8rem; color: #666; margin-top: 15px;">(Bấm để mở thư nhé)</p>
-        </div>
-    </div>
-<div class="letter-stack" id="stack">
+        <div class="letter-stack" id="stack">
             <div class="sheet" style="font-size: 1.5rem; text-align: center; font-weight: bold;">Vlt trắng vui vẻ.<img src="panda.jpg" class="sticker"></div>
             <div class="sheet">Chúc bạn tương lai xán lạn, tiền đồ tựa gấm. Mong rằng những cố gắng của bạn đều sẽ đạt kết quả tốt. Hy vọng bạn sẽ mạnh mẽ bước tiếp trên con đường mình chọn, đầu tư cho bản thân và biết được điều gì tốt và xấu. Cuối cùng tui ước rằng cuộc đời này sẽ ưu ái bạn hơn.<img src="panda.jpg" class="sticker"></div>
             <div class="sheet">Có thể thái độ của tui đối với bạn qua mắt cảu người khác có vẻ dửng dưng, không quan tâm. Tại vì tui không muốn mọi người biết tui đang nghĩ gì về việc này, theo bản năng tui đã bảo vệ mình trước. Chứ thật ra tui rất để ý đến hành động của bạn.<img src="panda.jpg" class="sticker"></div>
@@ -202,17 +157,30 @@
             <div class="sheet">Tui tự thấy mình không xứng với bạn. Nói thật thì tui bị xấu tính 😓 tui còn rất thực dụng và lười vch, chắc chắn không tự lo cho bản thân được huống chi là lo cho người khác. Không phải pick me girl đâu nhé, real đấy. Có thể tui còn mắc bệnh tâm lý dở hơi nào đó nữa.<img src="panda.jpg" class="sticker"></div>
             <div class="sheet">Quan trọng là tui không biết thể hiện tình cảm, nói thẳng ra là khuyết tật não yêu đương. Giỏi đọc truyện xem phim chứ không áp dụng được gì.<img src="panda.jpg" class="sticker"></div>
             <div class="sheet">Tóm lại, nếu đứng từ xa thì không sao, càng tiếp xúc bạn sẽ càng thất vọng thôi. Hết rồi.<img src="panda.jpg" class="sticker"></div>
+            <p class="instruction" id="ins">Dùng chuột kéo tờ giấy ra để đọc tiếp nha...</p>
         </div>
-        <p id="ins" style="display:none; font-size: 0.8rem; color: #777; margin-top: 10px;">Dùng chuột kéo tờ giấy ra để đọc tiếp nha...</p>
-  <script>
+    </div>
+
+    <script>
         function handleYes() {
+            // 1. Hiện chữ phản hồi trước
             document.getElementById('text-q').style.display = 'none';
             document.getElementById('btn-area').style.display = 'none';
             document.getElementById('text-r').style.display = 'block';
-            document.getElementById('stack').style.display = 'block'; // Hiện xấp thư mới
-            document.getElementById('ins').style.display = 'block'; // Hiện hướng dẫn
-            document.getElementById('ui-box').style.marginBottom = "50px";
-            initDrag();
+            
+            // 2. Nhích khung lên cao hẳn để không che gấu trúc
+            const uiBox = document.getElementById('ui-box');
+            uiBox.style.marginBottom = "450px"; 
+
+            // 3. Đợi 1.5 giây sau xấp thư mới hiện ra bất ngờ
+            setTimeout(() => {
+                const stack = document.getElementById('stack');
+                const ins = document.getElementById('ins');
+                stack.style.display = 'block';
+                ins.style.display = 'block';
+                stack.style.animation = "fadeInUp 0.8s forwards";
+                initDrag();
+            }, 1500);
         }
 
         function initDrag() {
